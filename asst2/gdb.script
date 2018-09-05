@@ -1,0 +1,38 @@
+Script started on Wed 05 Sep 2018 01:21:33 PM EDT
+[?1034hbash-4.2$ exitsys161 -w kernel-ASST2[C[C[C[C[C[C[C[C[C[C[6Pcd ~/os161/root/[C[C[C[C[C[C[C[C[C[Cexit[Kcd ~/os161/root/
+bash-4.2$ cd ~/os161/root/[C[C[C[C[C[C[C[C[C[Cexit[Ksys161 -w kernel-ASST2[C[C[C[C[C[C[C[C[C[C[6Pcd ~/os161/root/[C[C[C[C[C[C[C[C[C[Cexit[Kos161-gdb kernel
+[?1034hGNU gdb 6.6
+Copyright (C) 2006 Free Software Foundation, Inc.
+GDB is free software, covered by the GNU General Public License, and you are
+welcome to change it and/or distribute copies of it under certain conditions.
+Type "show copying" to see the conditions.
+There is absolutely no warranty for GDB.  Type "show warranty" for details.
+This GDB was configured as "--host=x86_64-unknown-linux-gnu --target=mips-harvard-os161"...
+(gdb) dir ../os161-2.0/kern/compile/ASST2/
+Source directories searched: /home/apriydar/os161/root/../os161-2.0/kern/compile/ASST2:$cdir:$cwd
+(gdb) target remote unix:.sockets/gdb
+Remote debugging using unix:.sockets/gdb
+[New Thread 10]
+__start () at ../../arch/sys161/main/start.S:54
+54	   addiu sp, sp, -24
+Current language:  auto; currently asm
+(gdb) break menu
+Breakpoint 1 at 0x8001578c: file ../../main/menu.c, line 744.
+(gdb) c
+Continuing.
+
+Breakpoint 1, menu (args=0x80037400 "") at ../../main/menu.c:744
+744		menu_execute(args, 1);
+Current language:  auto; currently c
+(gdb) where
+#0  menu (args=0x80037400 "") at ../../main/menu.c:744
+#1  0xffffffff80014650 in kmain (arguments=0x80037400 "")
+    at ../../main/main.c:213
+#2  0xffffffff8002ef4c in __start () at ../../arch/sys161/main/start.S:216
+(gdb) detach
+Ending remote debugging.
+(gdb) quit
+bash-4.2$ exit
+exit
+
+Script done on Wed 05 Sep 2018 01:23:53 PM EDT
