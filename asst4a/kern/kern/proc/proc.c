@@ -28,42 +28,33 @@
  */
 
 /*
-* Process support.
-*
-* There is (intentionally) not much here; you will need to add stuff
-* and maybe change around what's already present.
-*
-* p_lock is intended to be held when manipulating the pointers in the
-* proc structure, not while doing any significant work with the
-* things they point to. Rearrange this (and/or change it to be a
-* regular lock) as needed.
-*
-* Unless you're implementing multithreaded user processes, the only
-* process that will have more than one thread is the kernel process.
-*/
+ * Process support.
+ *
+ * There is (intentionally) not much here; you will need to add stuff
+ * and maybe change around what's already present.
+ *
+ * p_lock is intended to be held when manipulating the pointers in the
+ * proc structure, not while doing any significant work with the
+ * things they point to. Rearrange this (and/or change it to be a
+ * regular lock) as needed.
+ *
+ * Unless you're implementing multithreaded user processes, the only
+ * process that will have more than one thread is the kernel process.
+ */
 
 #include <types.h>
 #include <kern/errno.h>
 #include <spl.h>
-
-#define PROCINLINE
-
 #include <proc.h>
 #include <current.h>
 #include <addrspace.h>
 #include <vnode.h>
 #include <filetable.h>
-#include <synch.h>
-#include <array.h>
 
-/* The process for the kernel; this holds all the kernel-only threads.
+/*
+ * The process for the kernel; this holds all the kernel-only threads.
  */
 struct proc *kproc;
-
-
-struct procarray *p_table;
-struct lock *p_table_lock;
-struct semaphore* p_n_sem;
 
 /*
  * Create a proc structure.
@@ -93,31 +84,6 @@ proc_create(const char *name)
 	/* VFS fields */
 	proc->p_cwd = NULL;
 	proc->p_filetable = NULL;
-
-	unsigned newpid;
-	newpid = proc_addnew_ptable(proc);
-	proc->p_pid = newpid;
-	// for(unsigned i=0;i < procarray_num(&proc_table); i++)
- //    {
- //        DEBUG(DB_EXEC, "proc_create(): proc_table entry %u has pid %u\n",i,procarray_get(&proc_table,i)->p_pid);
- //    }
-    
-    proc->p_parent = NULL;
-    //proc->p_children = procarray_create();
-	procarray_init(proc->p_children);
-    proc->p_exitval = 0;
-    proc->p_finished = false;
-    proc->p_sem = sem_create("ProcessSemaphore",0);
-    
-    //  increment number of processes
-    // if (proc->p_pid != 0)
-    // {
-    //    lock_acquire(num_proc_lk);
-    //    num_processes++;
-    //    lock_release(num_proc_lk);
-    // }
-
-	V(p_n_sem);
 
 	return proc;
 }
@@ -207,45 +173,10 @@ proc_destroy(struct proc *proc)
 	}
 
 	threadarray_cleanup(&proc->p_threads);
-
-	kfree(proc->p_name);
-	//kfree(proc);
-	//detach all children:
-	spinlock_acquire(&proc->p_lock);
-	for(unsigned i=0;i<procarray_num(proc->p_children);i++)
-	{
-		struct proc* kid = procarray_get(proc->p_children, i);
-		kid->p_parent = NULL;
-	}
-	spinlock_release(&proc->p_lock);
-
-	//tell parent to detach me
-	if(proc->p_parent != NULL)
-	{
-		struct proc* parent = proc->p_parent;
-		spinlock_acquire(&parent->p_lock);
-        	for (unsigned i = 0; i < procarray_num(parent->p_children); i++)
-        	{
-            		//struct proc* child = procarray_get(&proc_table, i);
-	            	if (procarray_get(p_table, i)->p_pid == proc->p_pid)
-	            	{
-                		procarray_remove(parent->p_children, i);
-                		break;
-            		}
-        	}
-        	spinlock_release(&parent->p_lock);
-	}
-	else
-	{
-		procarray_destroy(proc->p_children);
-		sem_destroy(proc->p_sem);
-        	procarray_set(p_table, proc->p_pid, NULL);
-		kfree(proc);
-	}
-
 	spinlock_cleanup(&proc->p_lock);
 
-	P(p_n_sem);
+	kfree(proc->p_name);
+	kfree(proc);
 }
 
 /*
@@ -254,27 +185,10 @@ proc_destroy(struct proc *proc)
 void
 proc_bootstrap(void)
 {
-	//p_table = procarray_create();
-	procarray_init(p_table);
-	p_table_lock = lock_create("ProcessTableLock");
-	
-	if(p_table_lock == NULL)
-	{
-	    panic("p_table_lock creation failed");
-	}
-
 	kproc = proc_create("[kernel]");
-	if(kproc == NULL) {
-	    panic("proc_create for kproc failed\n");
+	if (kproc == NULL) {
+		panic("proc_create for kproc failed\n");
 	}
-
-	p_n_sem = sem_create("All Processes Sem",0);	
-	if(p_n_sem == NULL)
-	{
-	    panic("p_n_sem creation failed\n");
-	}
-
-	kprintf("Prcoess Bootstrap successful");
 }
 
 /*
@@ -473,66 +387,4 @@ proc_setas(struct addrspace *newas)
 	proc->p_addrspace = newas;
 	spinlock_release(&proc->p_lock);
 	return oldas;
-}
-
-
-
-struct proc
-*proc_get_process(pid_t pid)
-{
-	struct proc* p = NULL;
-	lock_acquire(p_table_lock);
-	for (unsigned i=0; i<procarray_num(p_table); i++)
-	{
-		p = procarray_get(p_table, i);
-		if (p->p_pid == pid)
-			break;
-	}
-	lock_release(p_table_lock);
-	return p;
-}
-
-
-
-pid_t 
-proc_addnew_ptable(struct  proc *proc)
-{
-	unsigned in, i, table_size;
-	
-	lock_acquire(p_table_lock);
-	table_size=p_n_sem->sem_count;
-	kprintf("n p count %u, array num %u\n", table_size, procarray_num(p_table));
-	if(procarray_num(p_table)==0)
-	{
-		procarray_add(p_table, proc, &in);
-		lock_release(p_table_lock);
-		return (pid_t)in;
-	}
-	else
-	{
-		for (i=0; i<procarray_num(p_table); i++)
-		{
-			struct proc* p=procarray_get(p_table, i);
-			if(p == NULL)
-			{
-				in=i;
-				procarray_set(p_table, in, proc);	
-				lock_release(p_table_lock);
-				return in;
-			}
-		}
-		//no space found
-		
-		if(procarray_num(p_table) == table_size) // increase if table is full
-			{
-				int res= procarray_setsize(p_table, (unsigned)table_size*1.5f);
-				if(res)
-					return res;
-			}
-		in =i; //put process at next index
-		procarray_set(p_table, in, proc);
-
-		lock_release(p_table_lock);
-	}
-	return in;
 }

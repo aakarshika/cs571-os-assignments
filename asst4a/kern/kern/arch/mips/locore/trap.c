@@ -108,11 +108,13 @@ kill_curthread(vaddr_t epc, unsigned code, vaddr_t vaddr)
 		break;
 	}
 
-	kprintf("Fatal user mode trap %u sig %d (%s, epc 0x%x, vaddr 0x%x)\n"
-			,code, sig, trapcodenames[code], epc, vaddr);
+	/*
+	 * You will probably want to change this.
+	 */
 
-	sys__exit(code);	
-		panic("_exit failed\n");
+	kprintf("Fatal user mode trap %u sig %d (%s, epc 0x%x, vaddr 0x%x)\n",
+		code, sig, trapcodenames[code], epc, vaddr);
+	panic("I don't know how to handle this\n");
 }
 
 /*
@@ -365,7 +367,6 @@ mips_trap(struct trapframe *tf)
 void
 mips_usermode(struct trapframe *tf)
 {
-	  DEBUG(DB_EXEC, "Entering mips usermode.\n");
 
 	/*
 	 * Interrupts should be off within the kernel while entering
@@ -400,7 +401,6 @@ mips_usermode(struct trapframe *tf)
 	 * This actually does it. See exception-*.S.
 	 */
 	asm_usermode(tf);
-	DEBUG(DB_EXEC, "Exiting mips usermode.\n");
 }
 
 /*

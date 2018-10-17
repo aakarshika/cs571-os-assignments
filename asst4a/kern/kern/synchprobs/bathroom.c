@@ -32,27 +32,9 @@
 #include <clock.h>
 #include <thread.h>
 #include <test.h>
-#include <synch.h>
 
 #define NPEOPLE 20
 
-
-static volatile unsigned int boy_count;
-static volatile unsigned int girl_count;
-
-static volatile unsigned int current_service;
-static volatile unsigned int next_service;
-
-static struct semaphore *bath_sem;
-static struct semaphore *completed_sem;
-
-//static struct semaphore *boy_sem;
-//static struct semaphore *girl_sem;
-
-static struct lock      *bathroom_lock;
-
-static struct cv        *boy_cv;
-static struct cv        *girl_cv;
 
 static
 void
@@ -69,69 +51,12 @@ boy(void *p, unsigned long which)
 	(void)p;
 	kprintf("boy #%ld starting\n", which);
 
+	// Implement this function
 
-	
-
-	lock_acquire(bathroom_lock);
-	boy_count++;
-
-	if(current_service==0) //service 0 means unoccupied
-	{
-		if(boy_count>girl_count)
-			current_service=1; //service 1 - serving boys
-		else
-			current_service=2; // service 2 -  serving girls
-	}
-	kprintf("boy #%ld starting\n", which);
-
-	//service is the control variable for the gender entering the bathroom
-	//next_service holds the next gender to be serviced. Helps for fair usage policy.
-	
-	
-	while(current_service==2 || bath_sem->sem_count==0 || next_service==2)
-		cv_wait(boy_cv,bathroom_lock); //wait and serve boys until service change
-	
-	P(bath_sem);//bathroom entered
-	boy_count--;
-	lock_release(bathroom_lock);
-	
-	
-
-
+	// use bathroom
 	kprintf("boy #%ld entering bathroom...\n", which);
-	//Use Bathroom
 	shower();
 	kprintf("boy #%ld leaving bathroom\n", which);
-
-
-	lock_acquire(bathroom_lock);
-	V(bath_sem);//bathroom exited
-	
-	if(girl_count!=0)
-	{
-		next_service=2; //change service if girl waiting
-	}
-	else
-	{
-		if(boy_count==0)
-			next_service=0; //Unoccupied when no one waiting
-		else
-		{
-			next_service=1; 
-			cv_broadcast(boy_cv, bathroom_lock); //Broadcast next boy
-		}
-	}
-	if(bath_sem->sem_count==3)
-	{
-		current_service=next_service;
-		if(current_service==1)
-			cv_broadcast(boy_cv,bathroom_lock); // broadcast next boy
-		else if(current_service==2)
-			cv_broadcast(girl_cv,bathroom_lock); // broadcast next girl
-	}
-
-	lock_release(bathroom_lock);
-	V(completed_sem); // To count total number of people taken bath.
 
 }
 
@@ -142,63 +67,12 @@ girl(void *p, unsigned long which)
 	(void)p;
 	kprintf("girl #%ld starting\n", which);
 
-
-        lock_acquire(bathroom_lock);
-        girl_count++;
-
-        if(current_service==0)
-        {
-                if(boy_count>girl_count)
-                        current_service=1;
-                else
-                        current_service=2;
-        }
-        kprintf("girl #%ld starting\n", which);
-        
-
-        while(current_service==1 || bath_sem->sem_count==0 || next_service==1)
-                cv_wait(girl_cv,bathroom_lock);
-        P(bath_sem);
-        girl_count--;
-        lock_release(bathroom_lock);
-
-        
-
-
-        kprintf("girl #%ld entering bathroom...\n", which);
-        shower();
-        kprintf("girl #%ld leaving bathroom\n", which);
-
-
-        lock_acquire(bathroom_lock);
-        V(bath_sem);
-        if(boy_count!=0)
-        {
-                next_service=1;
-        }
-        else
-        {
-                if(girl_count==0)
-                        next_service=0;
-                else
-                {
-                        next_service=2;
-                        cv_broadcast(girl_cv, bathroom_lock);
-                }
-        }
-        if(bath_sem->sem_count==3)
-        {
-                current_service=next_service;
-                if(current_service==1)
-                        cv_broadcast(boy_cv,bathroom_lock);
-                else if(current_service==2)
-                        cv_broadcast(girl_cv,bathroom_lock);
-        }
-
-        lock_release(bathroom_lock);
-        V(completed_sem);
+	// Implement this function
 	
-	
+	// use bathroom
+	kprintf("girl #%ld entering bathroom\n", which);
+	shower();
+	kprintf("girl #%ld leaving bathroom\n", which);
 
 }
 
@@ -207,14 +81,7 @@ int
 bathroom(int nargs, char **args)
 {
 
-	bath_sem = sem_create("Bathrooms busy", 3);
-	completed_sem = sem_create("Bathed Students", 0);
-	bathroom_lock = lock_create("Bathroom Lock");
-
-	boy_cv = cv_create("Boys CV");
-	girl_cv = cv_create("Girls CV");	
-
-int i, err=0;
+	int i, err=0;
 
 	(void)nargs;
 	(void)args;
@@ -237,8 +104,6 @@ int i, err=0;
 		}
 	}
 
-	for(i=0;i<NPEOPLE;i++)
-		P(completed_sem);
 
 	return 0;
 }

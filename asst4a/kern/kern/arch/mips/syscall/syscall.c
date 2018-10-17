@@ -37,8 +37,7 @@
 #include <current.h>
 #include <copyinout.h>
 #include <syscall.h>
-#include <proc.h>
-#include <addrspace.h>
+
 
 /*
  * System call dispatcher.
@@ -184,42 +183,24 @@ syscall(struct trapframe *tf)
 		break;
 
 	    case SYS_chdir:
-			err = sys_chdir((userptr_t)tf->tf_a0);
-			break;
+		err = sys_chdir((userptr_t)tf->tf_a0);
+		break;
 
 	    case SYS___getcwd:
-			err = sys___getcwd(
-				(userptr_t)tf->tf_a0,
-				tf->tf_a1,
-				&retval);
-			break;
+		err = sys___getcwd(
+			(userptr_t)tf->tf_a0,
+			tf->tf_a1,
+			&retval);
+		break;
 
 
-		/* Even more system calls will go here */
+	    /* Even more system calls will go here */
 
-		case SYS_getpid:
-			err = sys_getpid(&retval);
-			break;
 
-		case SYS__exit:
-			sys__exit(tf->tf_a0);
-			break;
-		
-		case SYS_waitpid:
-			err = sys_waitpid(
-				tf->tf_a0,
-				(userptr_t)tf->tf_a1,
-				0);
-			break;
-		
-		case SYS_fork:
-			err = sys_fork(tf,&retval);
-			break;
-
-		default:
-			kprintf("Unknown syscall %d\n", callno);
-			err = ENOSYS;
-			break;
+	    default:
+		kprintf("Unknown syscall %d\n", callno);
+		err = ENOSYS;
+		break;
 	}
 
 
@@ -259,18 +240,8 @@ syscall(struct trapframe *tf)
  *
  * Thus, you can trash it and do things another way if you prefer.
  */
-
-void enter_forked_process(void *dtf, unsigned long uselessdata)
+void
+enter_forked_process(struct trapframe *tf)
 {
-	(void)uselessdata;
-	struct trapframe *tf = dtf;
-	struct addrspace *as = curproc->p_addrspace;
-	tf->tf_v0 = 0;
-	tf->tf_a3 = 0;
-	tf->tf_epc += 4;
-	
-	proc_setas(as);
-	as_activate();
-	mips_usermode(tf);
+	(void)tf;
 }
-

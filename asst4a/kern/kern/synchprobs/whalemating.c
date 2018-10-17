@@ -34,53 +34,17 @@
 #include <lib.h>
 #include <thread.h>
 #include <test.h>
-#include <synch.h>
 
 #define NMATING 10
-
-
-static struct semaphore *male_sem;
-static struct semaphore *female_sem;
-static struct semaphore *mm_sem;
-
-static struct cv *male_cv;
-static struct cv *female_cv;
-static struct cv *mm_cv;
-
-static struct lock *mating_lock;
-
-static int matched;
 
 static
 void
 male(void *p, unsigned long which)
 {
 	(void)p;
-	kprintf("Male whale #%ld starting\n", which);
+	kprintf("male whale #%ld starting\n", which);
 
-	// 
-	
-	//lock_acquire(mating_lock);	
-	if(female_sem->sem_count == 0 || mm_sem->sem_count  == 0)
-  	{
-    	//No female or matchmaker
-        	V(male_sem);
-	        cv_wait(male_cv,mating_lock);
-		kprintf("Male %ld waiting...\n",which);
-        	
-	}
-	else
-	{
-         //Female and matchmaker also present
-        	 P(female_sem);
-                 P(mm_sem);
-                 cv_signal(female_cv, mating_lock);
-                 cv_signal(mm_cv,mating_lock);
-		kprintf("\tMating male %ld\n",which);
-		kprintf("\tMatched: %d pairs.\n", ++matched);
-    	 }
-        // lock_release(mating_lock);
-//	kprintf("male whale %ld ending\n", which);
+	// Implement this function
 }
 
 static
@@ -88,33 +52,9 @@ void
 female(void *p, unsigned long which)
 {
 	(void)p;
-	kprintf("Female whale #%ld starting\n", which);
+	kprintf("female whale #%ld starting\n", which);
 
-        //lock_acquire(mating_lock);
-
-	if(male_sem->sem_count == 0 || mm_sem->sem_count  == 0)
-        {
-        //No male or matchmaker
-
- 		V(female_sem);
-                cv_wait(female_cv,mating_lock);
-                kprintf("Female %ld waiting...\n",which);
-
-        }
-        else
-        {
-         //Decrementing  female and matchmaker with current male
-         
-		 P(male_sem);
-                 P(mm_sem);
-                 cv_signal(male_cv,mating_lock);
-                 cv_signal(mm_cv,mating_lock);
-                kprintf("\tMating female %ld\n",which);
-		kprintf("\tMatched: %d pairs.\n", ++matched);
-
-         }
-        //lock_release(mating_lock);
-
+	// Implement this function
 }
 
 static
@@ -122,33 +62,9 @@ void
 matchmaker(void *p, unsigned long which)
 {
 	(void)p;
-	kprintf("Matchmaker whale #%ld starting\n", which);
+	kprintf("matchmaker whale #%ld starting\n", which);
 
-        //lock_acquire(mating_lock);
-	if(male_sem->sem_count == 0 || female_sem->sem_count  == 0)
-        {
-        //Matchmaker is alone
-
-                V(mm_sem);
-                cv_wait(mm_cv,mating_lock);
-                kprintf("Matchmaker %ld waiting...\n",which);
-
-        }
-        else
-        {
-         // Male Female also present
-
-                 P(male_sem);
-                 P(female_sem);
-                 cv_signal(male_cv,mating_lock);
-                 cv_signal(female_cv,mating_lock);
-		kprintf("\tMatchmaker %ld successful.\n", which);
-        	kprintf("\tMatched: %d pairs.\n", ++matched);
-
-	 }
-        //lock_release(mating_lock);
-
-
+	// Implement this function
 }
 
 
@@ -156,20 +72,6 @@ matchmaker(void *p, unsigned long which)
 int
 whalemating(int nargs, char **args)
 {
-
-	male_sem = sem_create("Male whales",0);        
-	female_sem = sem_create("Female whales",0);
-	mm_sem = sem_create("Matchmaker whales",0);
-        
-	
-	mating_lock = lock_create("Mating lock");
-	
-	male_cv = cv_create("Male");
-        female_cv = cv_create("Female");
-        mm_cv = cv_create("Matchmaker");
-
-
-
 
 	int i, j, err=0;
 
@@ -201,4 +103,3 @@ whalemating(int nargs, char **args)
 
 	return 0;
 }
-

@@ -35,29 +35,12 @@
  *
  * Note: curproc is defined by <current.h>.
  */
-#include <types.h>
+
 #include <spinlock.h>
 #include <thread.h> /* required for struct threadarray */
 
-
-/*
- * Array of processes. (Same as found in thread.h)
- */
-
 struct addrspace;
 struct vnode;
-
-
-
-
-//DECLARRAY(proc);
-
-//#ifndef PROCINLINE
-//#define PROCINLINE INLINE
-//#endif
-
-//DEFARRAY(proc, PROCINLINE);
-
 
 /*
  * Process structure.
@@ -74,30 +57,8 @@ struct proc {
 	struct vnode *p_cwd;		/* current working directory */
 	struct filetable *p_filetable;	/* table of open files */
 
-	/* proc structure items */
-	pid_t p_pid;
-	struct semaphore *p_sem; //for wait/exit in processes
-	
-	int p_exitval; //value to return with exit codes
-	bool p_finished; //process can exit if finished = true
-
-	struct procarray *p_children; //array of child processes 
-	struct proc* p_parent;	//proc parent
+	/* add more material here as needed */
 };
-
-#ifndef PROCINLINE
-#define PROCINLINE INLINE
-#endif
-
-
-DECLARRAY(proc, PROCINLINE);
-DEFARRAY(proc, PROCINLINE);
-
-
-
-extern struct procarray *p_table;
-extern struct lock *p_table_lock;
-extern struct semaphore* p_n_sem;
 
 /* This is the process structure for the kernel and for kernel-only threads. */
 extern struct proc *kproc;
@@ -126,10 +87,5 @@ struct addrspace *proc_getas(void);
 /* Change the address space of the current process, and return the old one. */
 struct addrspace *proc_setas(struct addrspace *);
 
-/* provide support for adding new process to processarray */
-pid_t proc_addnew_ptable(struct  proc *proc);
-
-struct proc *proc_get_process(pid_t pid);
 
 #endif /* _PROC_H_ */
-

@@ -62,22 +62,6 @@ Print an array of struct thread.
 Usage: threadarray curproc->p_threads
 end
 
-define procarray
-    set $n = $arg0.arr.num
-    set $i = 0
-    printf "%u process\n", $n
-    while ($i < $n)
-        printf "process %u:\n", $i
-        print *(struct proc *)($arg0.arr.v[$i])
-        set $i++
-    end
-end
-document procarray
-Print an array of struct process.
-Usage: procarray curproc->p_children
-end
-
-
 define vnodearray
     set $n = $arg0.arr.num
     set $i = 0

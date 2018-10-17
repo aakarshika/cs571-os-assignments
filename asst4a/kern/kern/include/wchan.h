@@ -76,14 +76,5 @@ void wchan_sleep(struct wchan *wc, struct spinlock *lk);
 void wchan_wakeone(struct wchan *wc, struct spinlock *lk);
 void wchan_wakeall(struct wchan *wc, struct spinlock *lk);
 
-/* Declaration of wchan_lock and unlock to avoid warning of implicit declaration */
-
-//void wchan_lock(struct wchan *wc, struct spinlock *lk);
-
-//void wchan_unlock(struct wchan *wc, struct spinlock *lk);
-
-
-
-
 
 #endif /* _WCHAN_H_ */
