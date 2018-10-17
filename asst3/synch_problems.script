@@ -1,0 +1,186 @@
+Script started on Wed 26 Sep 2018 12:26:46 AM EDT
+[?1034hbash-4.2$ sys161 kernel-ASST3
+sys161: System/161 release 2.0.2, compiled Feb  2 2015 11:24:13
+
+OS/161 base system version 2.0
+Copyright (c) 2000, 2001-2005, 2008-2011, 2013, 2014
+   President and Fellows of Harvard College.  All rights reserved.
+
+Aakarshika Priydarshi's system version 0 (ASST3 #18)
+
+1804k physical memory available
+Device probe...
+lamebus0 (system main bus)
+emu0 at lamebus0
+ltrace0 at lamebus0
+ltimer0 at lamebus0
+beep0 at ltimer0
+rtclock0 at ltimer0
+lrandom0 at lamebus0
+random0 at lrandom0
+lhd0 at lamebus0
+lhd1 at lamebus0
+lser0 at lamebus0
+con0 at lser0
+
+cpu0: MIPS/161 (System/161 2.x) features 0x0
+cpu1: MIPS/161 (System/161 2.x) features 0x0
+OS/161 kernel [? for menu]: ?
+
+OS/161 kernel menu
+    [?o] Operations menu                [kh] Kernel heap stats              
+    [?t] Tests menu                     [khgen] Next kernel heap generation 
+    [sp1] Whale Mating                  [khdump] Dump kernel heap           
+    [sp2] Bathroom                      [q] Quit and shut down              
+
+Operation took 0.657972840 seconds
+OS/161 kernel [? for menu]: sp1
+Operation took 0.007828160 seconds
+OS/161 kernel [? for menu]: Male whale #2 starting
+Male whale #0 starting
+Matchmaker whale #9 starting
+Female whale #9 starting
+	Mating female 9
+	Matched: 1 pairs.
+Female whale #3 starting
+Female whale #6 starting
+Female whale #8 starting
+Matchmaker whale #3 starting
+	Matchmaker 3 successful.
+	Matched: 2 pairs.
+Matchmaker whale #1 starting
+Matchmaker whale #6 starting
+Matchmaker whale #2 starting
+Matchmaker whale #0 starting
+Matchmaker whale #5 starting
+Female whale #4 starting
+Male whale #5 starting
+	Mating male 5
+	Matched: 3 pairs.
+Female whale #1 starting
+Female whale #0 starting
+Female whale #2 starting
+Matchmaker whale #8 starting
+Male whale #1 starting
+	Mating male 1
+	Matched: 4 pairs.
+Male whale #6 starting
+Male whale #8 starting
+	Mating male 8
+	Matched: 5 pairs.
+Matchmaker whale #7 starting
+Female whale #7 starting
+Female whale #5 starting
+Male whale #4 starting
+	Mating male 4
+	Matched: 6 pairs.
+Male whale #9 starting
+	Mating male 9
+	Matched: 7 pairs.
+Male 2 waiting...
+Male whale #7 starting
+	Mating male 7
+	Matched: 8 pairs.
+Matchmaker whale #4 starting
+Male whale #3 starting
+	Mating male 3
+	Matched: 9 pairs.
+	Mating male 6
+	Matched: 10 pairs.
+
+OS/161 kernel [? for menu]: sp2
+girl #19 starting
+girl #19 starting
+girl #19 entering bathroom...
+boy #12 starting
+boy #12 starting
+boy #16 starting
+boy #16 starting
+boy #14 starting
+boy #14 starting
+boy #0 starting
+boy #0 starting
+girl #5 starting
+girl #5 starting
+girl #5 entering bathroom...
+boy #2 starting
+boy #2 starting
+girl #3 starting
+girl #3 starting
+girl #3 entering bathroom...
+girl #1 starting
+girl #1 starting
+boy #6 starting
+boy #6 starting
+girl #13 starting
+girl #13 starting
+girl #19 leaving bathroom
+boy #8 starting
+boy #8 starting
+girl #11 starting
+girl #11 starting
+girl #9 starting
+girl #9 starting
+boy #4 starting
+boy #4 starting
+girl #15 starting
+girl #15 starting
+girl #7 starting
+girl #7 starting
+girl #17 starting
+girl #17 starting
+girl #5 leaving bathroom
+girl #3 leaving bathroom
+boy #12 entering bathroom...
+boy #18 starting
+boy #18 starting
+boy #10 starting
+boy #10 starting
+boy #16 entering bathroom...
+boy #14 entering bathroom...
+boy #12 leaving bathroom
+boy #16 leaving bathroom
+boy #14 leaving bathroom
+girl #1 entering bathroom...
+girl #11 entering bathroom...
+girl #9 entering bathroom...
+girl #1 leaving bathroom
+girl #9 leaving bathroom
+girl #11 leaving bathroom
+boy #0 entering bathroom...
+boy #18 entering bathroom...
+boy #2 entering bathroom...
+boy #0 leaving bathroom
+boy #2 leaving bathroom
+boy #18 leaving bathroom
+girl #7 entering bathroom...
+girl #13 entering bathroom...
+girl #15 entering bathroom...
+girl #13 leaving bathroom
+girl #7 leaving bathroom
+girl #15 leaving bathroom
+boy #6 entering bathroom...
+boy #8 entering bathroom...
+boy #4 entering bathroom...
+boy #6 leaving bathroom
+boy #8 leaving bathroom
+boy #4 leaving bathroom
+girl #17 entering bathroom...
+girl #17 leaving bathroom
+boy #10 entering bathroom...
+boy #10 leaving bathroom
+Operation took 8.398821787 seconds
+OS/161 kernel [? for menu]: q
+Shutting down.
+The system is halted.
+cpu1: offline.
+sys161: 734341775 cycles (204026149 run, 530315626 global-idle)
+sys161:   cpu0: 35798484 kern, 0 user, 2622317 idle; 56087 ll, 56087/0 sc, 155412 sync
+sys161:   cpu1: 11293135 kern, 0 user, 27127666 idle; 16518 ll, 16518/0 sc, 36467 sync
+sys161: 8291 irqs 0 exns 0r/0w disk 13r/4115w console 0r/0w/1m emufs 0r/0w net
+sys161: Elapsed real time: 23.923587 seconds (30.6953 mhz)
+sys161: Elapsed virtual time: 29.377961046 seconds (25 mhz)
+bash-4.2$ exit
+exit
+
+Script done on Wed 26 Sep 2018 12:27:23 AM EDT

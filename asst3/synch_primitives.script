@@ -1,0 +1,227 @@
+Script started on Wed 26 Sep 2018 12:25:23 AM EDT
+[?1034hbash-4.2$ sys161 kernel-ASST3
+sys161: System/161 release 2.0.2, compiled Feb  2 2015 11:24:13
+
+OS/161 base system version 2.0
+Copyright (c) 2000, 2001-2005, 2008-2011, 2013, 2014
+   President and Fellows of Harvard College.  All rights reserved.
+
+Aakarshika Priydarshi's system version 0 (ASST3 #18)
+
+1804k physical memory available
+Device probe...
+lamebus0 (system main bus)
+emu0 at lamebus0
+ltrace0 at lamebus0
+ltimer0 at lamebus0
+beep0 at ltimer0
+rtclock0 at ltimer0
+lrandom0 at lamebus0
+random0 at lrandom0
+lhd0 at lamebus0
+lhd1 at lamebus0
+lser0 at lamebus0
+con0 at lser0
+
+cpu0: MIPS/161 (System/161 2.x) features 0x0
+cpu1: MIPS/161 (System/161 2.x) features 0x0
+OS/161 kernel [? for menu]: ?t
+
+OS/161 tests menu
+    [at]  Array test                    [sy1] Semaphore test                
+    [bt]  Bitmap test                   [sy2] Lock test             (1)     
+    [tlt] Threadlist test               [sy3] CV test               (1)     
+    [km1] Kernel malloc test            [sy4] CV test #2            (1)     
+    [km2] kmalloc stress test           [fs1] Filesystem test               
+    [km3] Large kmalloc test            [fs2] FS read stress                
+    [km4] Multipage kmalloc test        [fs3] FS write stress               
+    [tt1] Thread test 1                 [fs4] FS write stress 2             
+    [tt2] Thread test 2                 [fs5] FS long stress                
+    [tt3] Thread test 3                 [fs6] FS create stress              
+
+    (1) These tests will fail until you finish the synch assignment.
+
+Operation took 1.671947880 seconds
+OS/161 kernel [? for menu]: sy2
+Starting lock test...
+Lock test done.
+Operation took 0.459822560 seconds
+OS/161 kernel [? for menu]: sy3
+Starting CV test...
+Threads should print out in reverse order.
+Thread 31
+Thread 30
+Thread 29
+Thread 28
+Thread 27
+Thread 26
+Thread 25
+Thread 24
+Thread 23
+Thread 22
+Thread 21
+Thread 20
+Thread 19
+Thread 18
+Thread 17
+Thread 16
+Thread 15
+Thread 14
+Thread 13
+Thread 12
+Thread 11
+Thread 10
+Thread 9
+Thread 8
+Thread 7
+Thread 6
+Thread 5
+Thread 4
+Thread 3
+Thread 2
+Thread 1
+Thread 0
+Thread 31
+Thread 30
+Thread 29
+Thread 28
+Thread 27
+Thread 26
+Thread 25
+Thread 24
+Thread 23
+Thread 22
+Thread 21
+Thread 20
+Thread 19
+Thread 18
+Thread 17
+Thread 16
+Thread 15
+Thread 14
+Thread 13
+Thread 12
+Thread 11
+Thread 10
+Thread 9
+Thread 8
+Thread 7
+Thread 6
+Thread 5
+Thread 4
+Thread 3
+Thread 2
+Thread 1
+Thread 0
+Thread 31
+Thread 30
+Thread 29
+Thread 28
+Thread 27
+Thread 26
+Thread 25
+Thread 24
+Thread 23
+Thread 22
+Thread 21
+Thread 20
+Thread 19
+Thread 18
+Thread 17
+Thread 16
+Thread 15
+Thread 14
+Thread 13
+Thread 12
+Thread 11
+Thread 10
+Thread 9
+Thread 8
+Thread 7
+Thread 6
+Thread 5
+Thread 4
+Thread 3
+Thread 2
+Thread 1
+Thread 0
+Thread 31
+Thread 30
+Thread 29
+Thread 28
+Thread 27
+Thread 26
+Thread 25
+Thread 24
+Thread 23
+Thread 22
+Thread 21
+Thread 20
+Thread 19
+Thread 18
+Thread 17
+Thread 16
+Thread 15
+Thread 14
+Thread 13
+Thread 12
+Thread 11
+Thread 10
+Thread 9
+Thread 8
+Thread 7
+Thread 6
+Thread 5
+Thread 4
+Thread 3
+Thread 2
+Thread 1
+Thread 0
+Thread 31
+Thread 30
+Thread 29
+Thread 28
+Thread 27
+Thread 26
+Thread 25
+Thread 24
+Thread 23
+Thread 22
+Thread 21
+Thread 20
+Thread 19
+Thread 18
+Thread 17
+Thread 16
+Thread 15
+Thread 14
+Thread 13
+Thread 12
+Thread 11
+Thread 10
+Thread 9
+Thread 8
+Thread 7
+Thread 6
+Thread 5
+Thread 4
+Thread 3
+Thread 2
+Thread 1
+Thread 0
+CV test done
+Operation took 3.505816840 seconds
+OS/161 kernel [? for menu]: q
+Shutting down.
+The system is halted.
+cpu1: offline.
+sys161: 749668701 cycles (184425769 run, 565242932 global-idle)
+sys161:   cpu0: 49466077 kern, 0 user, 5001827 idle; 73389 ll, 73374/15 sc, 191447 sync
+sys161:   cpu1: 24119563 kern, 0 user, 30348341 idle; 33565 ll, 33542/23 sc, 74274 sync
+sys161: 7533 irqs 0 exns 0r/0w disk 13r/3380w console 0r/0w/1m emufs 0r/0w net
+sys161: Elapsed real time: 26.159271 seconds (28.6579 mhz)
+sys161: Elapsed virtual time: 29.991038034 seconds (25 mhz)
+bash-4.2$ exit
+exit
+
+Script done on Wed 26 Sep 2018 12:26:08 AM EDT
