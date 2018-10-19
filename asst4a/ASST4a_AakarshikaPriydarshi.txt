@@ -1,0 +1,201 @@
+ASST4a
+Code Reading
+
+                -Aakarshika Priydarshi
+                G01047156
+                apriydar
+
+Answers
+
+
+
+ELF Questions:
+--------------
+1. 
+ELF stands for: Executable and Linking Format
+These magic numbers are first 4 bytes found at the start of binary files that specify how to load executables and resolve linking dependencies.
+
+2.
+UIO_USERISPACE used for representing user process code
+UIO_USERSPACE for user process data. 
+UIO_SYSSPACE is used when writing data to a kernel buffer.
+
+3. 
+uio struct stores results from read in iovec pointer. This pointer is passed to load_segment before reading is performed.
+
+4. 
+If vfs is not closed, vnode still holds a reference that can no longer be reclaimed.
+
+5. 
+enter_new_process() in trap.c switches the processor into usermode. It is machine dependent.
+
+6. 
+The copyin and copyout functions are defined in copyinout.c and memmove is defined in memmove.c. 
+Copyin and copyout are meant to copy to/from userspace and the kernel and require special care so that the userspace addresses do not interfere with kernel space.
+
+7.
+For maintaining userspace pointers when copying etc from kernel.
+
+
+
+Trap/Syscall Questions:
+-----------------------
+
+1. 
+EX_SYS. Numerically, 8.
+
+2. 
+4 bytes.
+
+3. 
+User thread exits on calling sys__exit. If this does not fail, then kernel should not panic.
+
+4. 
+Arguments from the user-level stack starting at sp+16 can be used.
+
+
+
+MIPS Questions:
+---------------
+
+1. 
+On a shared system, v0 register helps in flow of control to shared code. This is allowed by SYSCALL macro.
+
+2. 
+'syscall' in file syscalls-mips.S
+
+3.
+From syscall.c:
+The first 4 32-bit arguments are passed in the 4
+ * argument registers a0-a3. 64-bit arguments are passed in *aligned*
+ * pairs of registers, that is, either a0/a1 or a2/a3. This means that
+ * if the first argument is 32-bit and the second is 64-bit, a1 is
+ * unused.
+The system call number is passed in
+ * the v0 register.
+The return value is passed back in the v0
+ * register, or v0 and v1 if 64-bit
+
+
+
+
+High Level Description
+=======================
+
+After understanding the overview of most functionality in OS161, the general idea that I have implemented for this assignment is as follows. 
+A static table of processes shall contain all processes in the system.
+The first process in this table has pid = 0, which is the kernel process. All other processes will arise from this.
+The pid of these processes and the index of processes in this table is kept the same for simplicity.
+Each process has it's properties and an array for storing other child processes of this process.
+There will be some global locks and semaphores to manage the total counts and wait/exit machanisms.
+
+
+
+Detailed Implementation
+========================
+
+Process structure:
+------------------
+
+struct proc {
+    char *p_name;           /* Name of this process */
+    struct spinlock p_lock;     /* Lock for this structure */
+    struct threadarray p_threads;   /* Threads in this process */
+
+    struct addrspace *p_addrspace;  /* virtual address space */
+
+    struct vnode *p_cwd;        /* current working directory */
+    struct filetable *p_filetable;  /* table of open files */
+
+    int p_pid; //process id
+    struct semaphore *p_sem; //for wait/exit in processes
+    
+    int p_exitval; //value to return with exit codes
+    bool p_finished; //process can exit if finished = true
+
+    struct array *p_children; //array of child processes 
+    struct proc* p_parent;  //proc parent
+}
+
+Each process has, apart from the basic elements, 
+pid-as an identifier to this process and for index in the process table, 
+exitval-for storing exit codes, 
+finished- boolean flag to store when the process is done executing, 
+children- array of pids of all child processes for this process, 
+parent-store pointer to parent process
+p_sem- semaphore to monitor the wait and exit functions.
+locks for synchronisation.
+
+
+
+
+Global items:
+---------------
+
+static procarray p_table;
+lock* p_table_lock;
+static int n_pr;
+extern semaphore p_kern_sem;
+
+The custom array procarray is declared using DEFARRAY macro found in array.h. This stores pointers to all processes in system storing them at index same as their pids.. 
+It is write-protected by p_table_lock
+n_pr is a counter for processes active currently, and is also protected by p_table_lock.
+
+
+The function proc_addnew_ptable() adds a newly created process to the first slot in the array that is NULL or if it is full, increases the size of the array by one and assigns the next slot.
+
+A helper function proc_get_process() in proc.c returns a process, given a pid, from the table.
+
+//n_pr keeps track of all process and the semaphore 
+p_kern_sem has a special function. It monitors if there are user processes in the system. It is initialised at boot, and comes out of it in menu.c when all user processes have ended and only the first kernel thread remains. 
+proc.c:261 
+        lock_acquire(p_table_lock);
+        KASSERT(n_pr > 0);
+        n_pr--; //decremented after a process is destroyed
+        if (n_pr == 1)//if only kernel process left
+        {
+                V(p_kern_sem);
+        }
+        lock_release(p_table_lock);
+menu.c:142
+	P(p_kern_sem);
+
+
+
+
+
+System call functionality
+--------------------------
+
+getpid():
+Simply returns curproc->p_pid in retval.
+
+waitpid():
+Child process is retrieved by the pid from the table. The parent or current process waits for a specific child to exit before resuming execution.
+This is done by maintaining a semaphore p_sem for each process that is initialised when the child process is waited upon by its parent. The semaphore signals from the exit() function by the child process.
+
+_exit():
+Exit has two tasks.
+1. while exiting, inform the parent who might be waiting that I am done. This is done using the semaphore p_sem. It couples with the waitpid function, an the process exiting increments and signals it for the waiting parent process to know.
+2. remove the process from memory. This is done by calling proc_destroy() on the process and freeing the memory, address space, filetables, and destroying the threads, locks and semaphores.
+
+fork():
+The forked child process is given the same name concatenated with '_c'. Forking involves making a duplicate of everything that is held by this process. The function 'proc_fork' deals with the low level mechanisms of it. The sys__fork call creates a new process and copies the properties from parent to child, which include filetable, addrspace, trapframe, etc. This new process is sent to the proc_addnew_ptable() function where a new slot is given to this process and a new pid is returned.
+Next, this new process is given it's own thread by thread_fork() call and sent to the enter_forked_process() function in syscall.
+
+
+
+Pros and Cons:
+--------------
+
+Pros: The table of processes maintains that the index of each process is its pid, which is reusable and simple. 
+
+Con: The system is single threaded for now. 
+
+
+Alternatives:
+-------------
+
+I worked out a multithreaded system theoretically which would use the same array mechanism or a linked list for mutithreaded processes.
+It complicates things by design and some functionalities like forking and exiting, therefore it was shelved for a later assignment.
+

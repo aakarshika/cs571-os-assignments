@@ -1,0 +1,45 @@
+Script started on Fri 19 Oct 2018 12:43:13 AM EDT
+[?1034hbash-4.2$ cd os161/root/
+bash-4.2$ sys161 kernel-ASST4a[K[K4a
+sys161: System/161 release 2.0.2, compiled Feb  2 2015 11:24:13
+
+OS/161 base system version 2.0
+Copyright (c) 2000, 2001-2005, 2008-2011, 2013, 2014
+   President and Fellows of Harvard College.  All rights reserved.
+
+Aakarshika Priydarshi's system version 0 (ASST4a #147)
+
+5900k physical memory available
+Prcoess Bootstrap successfulDevice probe...
+lamebus0 (system main bus)
+emu0 at lamebus0
+ltrace0 at lamebus0
+ltimer0 at lamebus0
+beep0 at ltimer0
+rtclock0 at ltimer0
+lrandom0 at lamebus0
+random0 at lrandom0
+lhd0 at lamebus0
+lhd1 at lamebus0
+lser0 at lamebus0
+con0 at lser0
+
+cpu0: MIPS/161 (System/161 2.x) features 0x0
+OS/161 kernel [? for menu]: p testbin/forktest
+(program name unknown): Starting. Expect this many:
+|----------------------------|
+001111222222223333333333333333
+(program name unknown): Complete.
+Operation took 1.692748285 seconds
+OS/161 kernel [? for menu]: q
+Shutting down.
+The system is halted.
+sys161: 485809084 cycles (78376562 run, 407432522 global-idle)
+sys161:   cpu0: 43122172 kern, 437435 user, 0 idle; 13921 ll, 13921/0 sc, 46727 sync
+sys161: 1846 irqs 24652 exns 0r/0w disk 21r/860w console 9r/0w/3m emufs 0r/0w net
+sys161: Elapsed real time: 17.999269 seconds (26.9905 mhz)
+sys161: Elapsed virtual time: 19.436653730 seconds (25 mhz)
+bash-4.2$ exit
+exit
+
+Script done on Fri 19 Oct 2018 12:43:54 AM EDT
